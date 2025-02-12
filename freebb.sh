@@ -10,21 +10,33 @@
 # On subsequent runs, prompts the user to create new posts or update pages.
 
 # ----------------------------------------------------
-# CONFIGURATION
+# | INITIALIZATION                                  |
 # ----------------------------------------------------
 
+# ANSI color codes for the script text/menu
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+BOLD="\e[1m"
+RESET="\e[0m"
+
+# Metadata stuff
 BLOG_TITLE="A Series of Tubes"
-POSTS_DB="posts.txt"    # stores metadata about blog posts
+POSTS_DB="posts.txt"    
 STYLESHEET="styles.css"
 
-# By default, we assume we have not initialized unless we see a marker file
+# This marker file tells FreeBB whether or not this is the first run. 
+# WARNING: If this file is missing, the initial blog pages will be generated and
+# any existing pages will be overwritten. 
 INIT_MARKER=".initialized" 
 
 # ----------------------------------------------------
-# UTILITY FUNCTIONS
+# | CSS & DATE                                       |
 # ----------------------------------------------------
 
-# Writes the styles.css file (simple design you can customize).
+# A simple way to write the CSS file. 
+# Edit the CSS to your liking BEFORE you run the program for the first time.
 write_styles_css() {
   cat <<EOF > "$STYLESHEET"
 html {
@@ -65,18 +77,20 @@ footer {
   text-align: right;
 }
 EOF
-  echo "Created/updated $STYLESHEET."
+  echo -e "${GREEN}Created/updated $STYLESHEET.${RESET}"
 }
 
-# A helper to get today's date in YYYY-MM-DD format
+# You can change the date to a format you like.
 today_date() {
   date +"%Y-%m-%d"
 }
 
 # ----------------------------------------------------
-# FOOTER (USED BY ALL PAGES)
+# FOOTER 
 # ----------------------------------------------------
-# We store a function that outputs the HTML for the footer.
+
+# The footer is shared by all pages (called later during page creation).
+# Keep that in mind when editing the footer content. 
 footer_html() {
   cat <<EOF
     <footer>
@@ -123,7 +137,7 @@ EOF
     tac "$POSTS_DB" | while IFS="|" read -r postfile date title blurb; do
       # Show date, post title (link to file), then the blurb
       echo "      <div style=\"margin-bottom: 1.5rem;\">" >> index.html
-      echo "        <p><strong>[$date]</strong> <a href=\"$postfile\">$title</a></p>" >> index.html
+      echo "        <p>[$date] - <a href=\"$postfile\">$title</a></p>" >> index.html
       echo "        <p>$blurb</p>" >> index.html
       echo "      </div>" >> index.html
     done
@@ -141,12 +155,12 @@ $(footer_html)
 </html>
 EOF
 
-  echo "Updated index.html."
+  echo -e "${GREEN}Updated index.html.${RESET}"
 }
 
 write_about_html() {
   # Overwrite about.html with new content from user input
-  echo "Type your About page content. Press Ctrl+D when finished."
+  echo -e "${YELLOW}Type your About page content. Press Ctrl+D when finished.${RESET}"
   CONTENT=$(cat)  # read all lines until Ctrl+D
 
   cat <<EOF > about.html
@@ -177,12 +191,12 @@ $(footer_html)
 </html>
 EOF
 
-  echo "about.html updated."
+  echo -e "${GREEN}about.html updated.${RESET}"
 }
 
 write_links_html() {
   # Overwrite links.html with new content from user input
-  echo "Type your links page content (example: <ul><li>Link</li></ul>). Press Ctrl+D when finished."
+  echo -e "${YELLOW}Type your links page content (example: <ul><li>Link</li></ul>). Press Ctrl+D when finished.${RESET}"
   CONTENT=$(cat)  # read all lines until Ctrl+D
 
   cat <<EOF > links.html
@@ -213,12 +227,12 @@ $(footer_html)
 </html>
 EOF
 
-  echo "links.html updated."
+  echo -e "${GREEN}links.html updated.${RESET}"
 }
 
 create_first_run_files() {
   # Called on the first run to create index.html, about.html, links.html, styles.css, plus your first blog post
-  echo "=== Welcome to FreeBB! Creating initial files... ==="
+  echo -e "${BOLD}${BLUE}=== Welcome to FreeBB! Creating initial files... ===${RESET}"
   write_styles_css
   write_index_html
 
@@ -280,11 +294,11 @@ $(footer_html)
 </html>
 EOF
 
-  echo "Now let's create your first blog post!"
+  echo -e "${YELLOW}Now let's create your first blog post!${RESET}"
   create_new_post
 
   touch "$INIT_MARKER"
-  echo "=== Initialization complete. ==="
+  echo -e "${GREEN}=== Initialization complete. ===${RESET}"
 }
 
 create_new_post() {
@@ -296,13 +310,13 @@ create_new_post() {
   read -rp "Enter filename for the post (e.g. ${FILENAME_DEFAULT}.html): " POST_FILE
   POST_FILE="${POST_FILE:-$FILENAME_DEFAULT.html}"
 
-  echo "Type your post content. Use html tags like <p> and <ul> to format your post."
-  echo "Keep in mind this is NOT a robust text editor, so it's best to keep formatting simple."
-  echo "Press Ctrl+D when done."
+  echo -e "${YELLOW}Type your post content. Use html tags like <p> and <ul> to format your post.${RESET}"
+  echo -e "${YELLOW}Keep in mind this is NOT a robust text editor, so it's best to keep formatting simple.${RESET}"
+  echo -e "${YELLOW}Press Ctrl+D when done.${RESET}"
   POST_CONTENT=$(cat)  # read until Ctrl+D
 
   # Short 256-character blurb
-  echo "Enter a short (256 char or less) blurb about this post:"
+  echo -e "${YELLOW}Enter a short (256 char or less) blurb about this post:${RESET}"
   read -r BLURB
   # Truncate if needed
   BLURB="${BLURB:0:256}"
@@ -336,7 +350,7 @@ $(footer_html)
 </html>
 EOF
 
-  echo "Post created: $POST_FILE"
+  echo -e "${GREEN}Post created: $POST_FILE ${GREEN}"
 
   # Store metadata so we can build index page from it
   # We'll append a line: "postfile|date|title|blurb"
@@ -359,11 +373,11 @@ fi
 # Show menu on subsequent runs
 while true; do
   echo ""
-  echo "==============================="
-  echo "===         FreeBB          ==="
-  echo "=== A Static Blog Generator ==="
-  echo "===          v0.3           ==="
-  echo "==============================="
+  echo -e "${BOLD}${BLUE}===============================${RESET}"
+  echo -e "${BOLD}${BLUE}===         FreeBB          ===${RESET}"
+  echo -e "${BOLD}${BLUE}=== A Static Blog Generator ===${RESET}"
+  echo -e "${BOLD}${BLUE}===          v0.3           ===${RESET}"
+  echo -e "${BOLD}${BLUE}===============================${RESET}"
   echo ""
   echo "1) Create a new blog post"
   echo "2) Update the about page"
@@ -386,11 +400,11 @@ while true; do
       write_index_html
       ;;
     0)
-      echo "Exiting..."
+      echo -e "${RED}Exiting...${RESET}"
       exit 0
       ;;
     *)
-      echo "Invalid choice."
+      echo -e "${RED}Invalid choice.${RESET}"
       ;;
   esac
 done
