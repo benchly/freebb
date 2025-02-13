@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # FreeBB by benchly
-# License: CC BY-NC-SA
+# License: GPL 3.0
 # github: https://github.com/benchly/freebb
 #
 # FreeBB is a VERY simple static blog generator inspired by cfenellosa's superb bashblog.
