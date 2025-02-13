@@ -33,7 +33,7 @@ BOLD="\e[1m"
 RESET="\e[0m"
 
 # Metadata stuff
-BLOG_TITLE="A Series of Tubes"
+BLOG_TITLE="Your Blog Name Here"
 POSTS_DB="posts.txt"    
 STYLESHEET="styles.css"
 
@@ -105,9 +105,9 @@ today_date() {
 footer_html() {
   cat <<EOF
     <footer>
-      <p>&copy; 2025 benchly@aseriesoftubes.lol</p>
-	  <p>CC BY-NC-SA 4.0</p>
-	  <p>I am open for writing work. Email me!</p>
+      <p>&copy; YYYY [your contact or name]</p>
+	  <p>[Your Preferred License]</p>
+	  <p>Any other footer notes you want</p>
     </footer>
 EOF
 }
@@ -128,8 +128,8 @@ write_index_html() {
 </head>
 <body>
   <header>
-    <h1>A Series of Tubes</h1>
-    <p>musty musings about interesting things</p>
+    <h1>Your Blog Name</h1>
+    <p>Put a greeting or tagline here.</p>
   </header>
   <nav>
     <a href="index.html">Home</a>
@@ -281,7 +281,7 @@ create_first_run_files() {
   </nav>
   <hr>
   <main>
-    <p>This is the about page. Update it anytime with the menu!</p>
+    <p>This is the about page. You'll probably want to update it using your preferred text editor.</p>
   </main>
   <hr>
 $(footer_html)
@@ -311,7 +311,7 @@ EOF
   </nav>
   <hr>
   <main>
-    <p>List your favorite links here!</p>
+    <p>List your favorite links here! Update/append using your preferred text editor.</p>
   </main>
   <hr>
 $(footer_html)
@@ -404,7 +404,7 @@ while true; do
   echo -e "${BOLD}${BLUE}===============================${RESET}"
   echo -e "${BOLD}${BLUE}===         FreeBB          ===${RESET}"
   echo -e "${BOLD}${BLUE}=== A Static Blog Generator ===${RESET}"
-  echo -e "${BOLD}${BLUE}===         v1.0.1          ===${RESET}"
+  echo -e "${BOLD}${BLUE}===         v1.0.2          ===${RESET}"
   echo -e "${BOLD}${BLUE}===============================${RESET}"
   echo ""
   echo "1) Create a new blog post"
