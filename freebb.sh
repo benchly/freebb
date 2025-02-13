@@ -1,16 +1,27 @@
 #!/usr/bin/env bash
 #
-# blog.sh - A simple bash-based static blog generator
+# FreeBB by benchly
+# License: CC BY-NC-SA
+# github: https://github.com/benchly/freebb
+#
+# FreeBB is a VERY simple static blog generator inspired by cfenellosa's superb bashblog.
+# If you want a quick and dirty solution to crank out posts for a small blog, FreeBB
+# can help.
+#
+# If you are looking for something more robust with better editing options and a 
+# focus on addons like Discus or analytics, you want bashblog, so go check out the
+# github here: https://github.com/cfenollosa/bashblog
 #
 # Usage:
 #   1) Give permission:  chmod +x blog.sh
 #   2) Run:             ./blog.sh
 #
 # On first run, creates index.html, about.html, links.html, styles.css, plus an initial blog post.
+#
 # On subsequent runs, prompts the user to create new posts or update pages.
 
 # ----------------------------------------------------
-# | INITIALIZATION                                  |
+# | LET'S GET STARTED                                |
 # ----------------------------------------------------
 
 # ANSI color codes for the script text/menu
@@ -86,7 +97,7 @@ today_date() {
 }
 
 # ----------------------------------------------------
-# FOOTER 
+# FOOTER                                             |
 # ----------------------------------------------------
 
 # The footer is shared by all pages (called later during page creation).
@@ -102,11 +113,10 @@ EOF
 }
 
 # ----------------------------------------------------
-# FUNCTIONS TO CREATE / UPDATE PAGES
+# CREATE/UPDATE Index.html                           |
 # ----------------------------------------------------
 
 write_index_html() {
-  # Writes an index.html file compiled from BLOG_TITLE and any existing posts in $POSTS_DB
   cat <<EOF > index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -132,7 +142,7 @@ write_index_html() {
     <div class="post-links">
 EOF
 
-  # If $POSTS_DB exists, let's list them from newest to oldest using tac (reverse cat)
+  # Use tac to list posts from newest to oldest
   if [[ -f "$POSTS_DB" ]]; then
     tac "$POSTS_DB" | while IFS="|" read -r postfile date title blurb; do
       # Show date, post title (link to file), then the blurb
@@ -158,9 +168,16 @@ EOF
   echo -e "${GREEN}Updated index.html.${RESET}"
 }
 
+# ----------------------------------------------------
+# OVERWRITE About.html or Links.html                 |
+# ----------------------------------------------------
+
 write_about_html() {
-  # Overwrite about.html with new content from user input
+  # Overwrite about.html with new content from user input because I am not smart enough
+  # to figure out how to allow the user to edit the current content. Open to suggestions.
   echo -e "${YELLOW}Type your About page content. Press Ctrl+D when finished.${RESET}"
+  echo -e "${RED}Warning: existing content will be replaced by new content.${RESET}"
+  echo -e "${YELLOW}If you just wish to edit existing content, better to do it in a text editor.${RESET}"
   CONTENT=$(cat)  # read all lines until Ctrl+D
 
   cat <<EOF > about.html
@@ -195,8 +212,10 @@ EOF
 }
 
 write_links_html() {
-  # Overwrite links.html with new content from user input
+  # Overwrite links.html with new content from user input - still not smart enough :) 
   echo -e "${YELLOW}Type your links page content (example: <ul><li>Link</li></ul>). Press Ctrl+D when finished.${RESET}"
+  echo -e "${RED}Warning: existing content will be replaced by new content.${RESET}"
+  echo -e "${YELLOW}If you just wish to edit existing content, better to do it in a text editor.${RESET}"
   CONTENT=$(cat)  # read all lines until Ctrl+D
 
   cat <<EOF > links.html
@@ -230,13 +249,18 @@ EOF
   echo -e "${GREEN}links.html updated.${RESET}"
 }
 
+# ----------------------------------------------------
+# CREATE FIRST RUN FILES                             |
+# ----------------------------------------------------
+
 create_first_run_files() {
-  # Called on the first run to create index.html, about.html, links.html, styles.css, plus your first blog post
+  # Called on the first run to create index.html, about.html, links.html, styles.css, plus your first blog post, giving you an initial blog structure to work with.
   echo -e "${BOLD}${BLUE}=== Welcome to FreeBB! Creating initial files... ===${RESET}"
   write_styles_css
   write_index_html
 
-  # about.html initially not much content
+  # the initial about.html will be empty aside from header/footer
+  # I recommend editing these with a text editor of your choice once created.
   cat <<EOF > about.html
 <!DOCTYPE html>
 <html lang="en">
@@ -265,7 +289,8 @@ $(footer_html)
 </html>
 EOF
 
-  # links.html
+  # the initial links.html will be empty aside from header/footer
+  # I recommend editing these with a text editor of your choice, once created.
   cat <<EOF > links.html
 <!DOCTYPE html>
 <html lang="en">
@@ -300,6 +325,10 @@ EOF
   touch "$INIT_MARKER"
   echo -e "${GREEN}=== Initialization complete. ===${RESET}"
 }
+
+# ----------------------------------------------------
+# CREATE FRESH BLOG POST                             |
+# ----------------------------------------------------
 
 create_new_post() {
   # Prompt user for post title
@@ -352,8 +381,7 @@ EOF
 
   echo -e "${GREEN}Post created: $POST_FILE ${GREEN}"
 
-  # Store metadata so we can build index page from it
-  # We'll append a line: "postfile|date|title|blurb"
+# Store data to build the index page
   DATE_PUB=$(today_date)
   echo "$POST_FILE|$DATE_PUB|$POST_TITLE|$BLURB" >> "$POSTS_DB"
 
@@ -362,7 +390,7 @@ EOF
 }
 
 # ----------------------------------------------------
-# MAIN LOGIC
+# MENU LOGIC                                         |
 # ----------------------------------------------------
 
 # If not initialized, run the first-run function
@@ -376,7 +404,7 @@ while true; do
   echo -e "${BOLD}${BLUE}===============================${RESET}"
   echo -e "${BOLD}${BLUE}===         FreeBB          ===${RESET}"
   echo -e "${BOLD}${BLUE}=== A Static Blog Generator ===${RESET}"
-  echo -e "${BOLD}${BLUE}===          v0.3           ===${RESET}"
+  echo -e "${BOLD}${BLUE}===         v1.0.1          ===${RESET}"
   echo -e "${BOLD}${BLUE}===============================${RESET}"
   echo ""
   echo "1) Create a new blog post"
